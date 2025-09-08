@@ -39,7 +39,7 @@ const products = [
 
 async function seedProducts() {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
+    await mongoose.connect(process.env.MONGO_ATLAS_URL);
     await Product.deleteMany(); // clear old data
     await Product.insertMany(products);
     console.log("Dummy products added ✅");

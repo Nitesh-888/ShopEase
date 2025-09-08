@@ -1,31 +1,22 @@
+// src/components/Navbar.jsx
+import React, { useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
 import { useCart } from "../context/CartContext.jsx";
+import { useAuth } from "../context/AuthContext.jsx";
 
 export default function Navbar() {
   const navigate = useNavigate();
   const { cartCount, fetchCartCount } = useCart();
+  const { token, isAuthenticated, logout } = useAuth();
 
-  // make token reactive so navbar updates after login/logout
-  const [token, setToken] = useState(() => localStorage.getItem("token"));
-
-  useEffect(() => {
-    const onStorage = () => setToken(localStorage.getItem("token"));
-    window.addEventListener("storage", onStorage);
-    // also refresh token on mount (useful if login happened in-app)
-    setToken(localStorage.getItem("token"));
-    return () => window.removeEventListener("storage", onStorage);
-  }, []);
-
-  // update cart count when navbar mounts (optional)
-  useEffect(() => {
-    if (token) fetchCartCount();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token]);
+  // when token appears, ensure cart count is fresh
+  // (fetchCartCount is safe to call multiple times)
+  React.useEffect(() => {
+    if (isAuthenticated) fetchCartCount();
+  }, [isAuthenticated, fetchCartCount]);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    setToken(null);
+    logout();
     navigate("/login");
   };
 
@@ -38,12 +29,10 @@ export default function Navbar() {
     <nav className="bg-white shadow-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-14 items-center">
-          {/* Logo */}
           <NavLink to="/" className="text-xl font-bold text-blue-600">
             ShopEase
           </NavLink>
 
-          {/* Links */}
           <div className="flex items-center space-x-3">
             <NavLink to="/" className={linkClass}>
               Home
@@ -58,7 +47,7 @@ export default function Navbar() {
               </span>
             </NavLink>
 
-            {token ? (
+            {isAuthenticated ? (
               <button
                 onClick={handleLogout}
                 className="px-3 py-2 rounded-md text-sm font-medium bg-red-500 text-white hover:bg-red-600"

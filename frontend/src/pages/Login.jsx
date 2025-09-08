@@ -1,7 +1,8 @@
+// src/pages/Login.jsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import API from "../services/api.js";
 import { useCart } from "../context/CartContext.jsx";
+import { useAuth } from "../context/AuthContext.jsx";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -9,22 +10,21 @@ export default function Login() {
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
   const { fetchCartCount } = useCart();
+  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!email || !password) return setMessage("Please fill all fields");
     try {
-      const res = await API.post("/auth/login", { email, password });
-      localStorage.setItem("token", res.data.token);
-      setMessage("Login successful");
-      await fetchCartCount();       // update navbar badge
-      navigate("/");                // go to products
+      await login(email, password);           // sets token in context + localStorage
+      await fetchCartCount();                 // update cart badge
+      navigate("/");
     } catch (err) {
       setMessage(err.response?.data?.message || "Login failed");
     }
   };
 
   return (
+    /* ... your styled form JSX (same as before) ... */
     <div className="min-h-[70vh] flex items-center justify-center px-4">
       <div className="w-full max-w-md bg-white shadow-lg rounded-xl p-8">
         <h2 className="text-2xl font-bold mb-4 text-center">Welcome back</h2>
@@ -36,6 +36,7 @@ export default function Login() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* email/password inputs and submit button (same as before) */}
           <label className="block">
             <span className="text-sm font-medium text-gray-700">Email</span>
             <input

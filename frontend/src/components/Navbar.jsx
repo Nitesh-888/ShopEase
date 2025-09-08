@@ -29,8 +29,8 @@ export default function Navbar() {
     <nav className="bg-white shadow-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-14 items-center">
-          <NavLink to="/" className="text-xl font-bold text-blue-600">
-            ShopEase
+          <NavLink to="/" className="text-xl font-bold text-blue-600 flex">
+            <img src="/ShopEase-icon.png" alt="image loading" className="w-[25px]" />ShopEase
           </NavLink>
 
           <div className="flex items-center space-x-3">
